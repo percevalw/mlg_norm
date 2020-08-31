@@ -211,7 +211,6 @@ class Classifier(torch.nn.Module):
         embeds = self.embeddings(tokens, mask)[0]
         state = embeds.masked_fill(~mask.unsqueeze(-1), 0)
 
-        # Compute the tags scores
         state[:, 0] = 0
         state[range(len(state)), mask.sum(-1) - 1] = 0
         state = state.sum(-2) / (mask.sum(-1) - 2).unsqueeze(-1)
