@@ -19,8 +19,8 @@ git clone https://github.com/percevalw/deep_multilingual_normalization.git
 
 You will need to download the UMLS version 2014AB to replicate our results:
 1. Download all the files under the *2014AB UMLS Active Release Files* section at [https://www.nlm.nih.gov/research/umls/licensedcontent/umlsarchives04.html#2014AB_active](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsarchives04.html#2014AB_active)
-2. Unzip mmsys.zip
-3. Copy all the files downloaded files (mmsys.zip included !) inside the new mmsys folder at the top level
+2. Unzip `mmsys.zip`
+3. Copy all the files downloaded files (`mmsys.zip` included !) inside the new mmsys folder at the top level
 4. Run the main command depending on your OS (ex: `run_mac.command`)
 5. Select *Install UMLS*
 6. Remember the destination path, we will need to move some files from it later
