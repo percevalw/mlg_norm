@@ -1,6 +1,7 @@
 import string
 import logging
 import sys
+import pandas as pd
 
 from nlstruct.utils import torch_clone
 from nlstruct.utils import torch_global as tg
@@ -85,6 +86,17 @@ history, classifier = train_step1(
     with_tqdm=True,
 )
 
+# Dev split is the test for Quaero CLEF 2015
+threshold = 0.5
+test_batcher = quaero_batcher[quaero_batcher['split'] == list(vocabularies['split']).index('dev')]
+test_batcher_emea = test_batcher[test_batcher['quaero_source'] == 0]  # EMEA
+test_batcher_medline = test_batcher[test_batcher['quaero_source'] == 1]  # MEDLINE
+print("\nSTEP 1 evaluation:\n")
+print("-------\nEMEA")
+print(pd.Series(compute_scores(predict(test_batcher_emea, classifier.to(tg.device), batch_size=32), test_batcher_emea, threshold=threshold)))
+print("-------\nMEDLINE")
+print(pd.Series(compute_scores(predict(test_batcher_medline, classifier.to(tg.device), batch_size=32), test_batcher_medline, threshold=threshold)))
+
 # Step 2
 train_batcher, vocabularies, train_mentions, train_mention_ids, group_label_mask, quaero_batcher, quaero_mentions, quaero_mention_ids = preprocess(
     bert_name=bert_name,
@@ -108,7 +120,7 @@ classifier2 = train_step2(
     classifier=torch_clone(classifier).to(tg.device),
 
     train_batcher=train_batcher,
-    val_batcher=quaero_batcher[quaero_batcher['split'] == 0],
+    val_batcher=quaero_batcher[quaero_batcher['split'] == list(vocabularies['split']).index('dev')],
     group_label_mask=group_label_mask,
 
     batch_size=128,
@@ -120,3 +132,14 @@ classifier2 = train_step2(
     rescale=20,
     n_neighbors=100,
 )
+
+# Dev split is the test for Quaero CLEF 2015
+threshold = 0.1
+test_batcher = quaero_batcher[quaero_batcher['split'] == list(vocabularies['split']).index('dev')]
+test_batcher_emea = test_batcher[test_batcher['quaero_source'] == 0]  # EMEA
+test_batcher_medline = test_batcher[test_batcher['quaero_source'] == 1]  # MEDLINE
+print("\nSTEP 2 evaluation:\n")
+print("-------\nEMEA")
+print(pd.Series(compute_scores(predict(test_batcher_emea, classifier.to(tg.device), batch_size=32), test_batcher_emea, threshold=threshold)))
+print("-------\nMEDLINE")
+print(pd.Series(compute_scores(predict(test_batcher_medline, classifier.to(tg.device), batch_size=32), test_batcher_medline, threshold=threshold)))
