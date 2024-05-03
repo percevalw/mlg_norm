@@ -1,0 +1,126 @@
+[tool.edsnlp]
+# Suggestion: choose a name that mixes both the architecture (mlg_norm) and the
+# dataset on which the model was trained (mostly french synonyms)
+# This field will be read by script/package.py
+model_name = "mlg_norm_fre"
+
+[tool.poetry]
+name = "mlg_norm"
+version = "0.1.0"
+description = ""
+authors = ["Perceval Wajsburt <perceval.wajsburt@aphp.fr>", "Xavier Tannier <xavier.tannier@sorbonne-universite.fr", "Arnaud Sarfati <arnaud.sarfati@polytechnique.edu>"]
+
+[tool.poetry.dependencies]
+# /!\ Do not hesitate to adjust python's version to fit your training and deployment environments
+python = ">3.7.6,<4.0"
+edsnlp = { version = ">=0.11.0", extras = ["ml"] }
+sentencepiece = "^0.1.96"
+
+[tool.poetry.group.dev.dependencies]
+dvc = { version = "^2.37.0", markers = "python_version >= '3.8'" }
+pre-commit = "^2.18.1"
+rich-logger = "^0.3.0"
+scipy = [
+    { version = ">=1.7.2", markers = "sys_platform == 'arm64' and python_version < '3.8'" },
+    { version = ">=1.9.2", markers = "sys_platform == 'arm64' and python_version >= '3.8'" },
+    { version = "*", markers = "sys_platform != 'arm64'" }
+]
+polars = [
+    { version = "*", markers = "python_version >= '3.8'" },
+    { version = "*", markers = "python_version < '3.8'" }
+]
+torch = [
+    { version = ">=2.0.0", markers = "python_version >= '3.8'" },
+    { version = "*", markers = "python_version < '3.8'" }
+]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+ignore-magic = false
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = true
+ignore-nested-functions = false
+ignore-nested-classes = true
+ignore-setters = false
+fail-under = 10
+exclude = ["docs", "build", "tests"]
+verbose = 0
+quiet = false
+whitelist-regex = []
+color = true
+omit-covered-files = false
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+
+[tool.mypy]
+plugins = "pydantic.mypy"
+
+[tool.ruff]
+fix = true
+extend-exclude = [
+    ".git",
+    "__pycache__",
+    "__init__.py",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".venv",
+    "build",
+]
+line-length = 88
+select = [
+    "E",
+    "F",
+    "W",
+    "I001"
+]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[tool.ruff.extend-per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.isort]
+known-first-party = ["mlg_norm"]
+known-third-party = ["build"]
+order-by-type = true
+
+[tool.coverage.report]
+include = [
+    "ml_norm/*",
+    "scripts/*",
+]
+omit = [
+    "tests/*",
+]
+exclude_lines = [
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "@overload",
+    "pragma: no cover",
+    "raise .*Error",
+    "raise .*Exception",
+    "warn\\(",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+    "Span.set_extension.*",
+    "Doc.set_extension.*",
+    "Token.set_extension.*",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "pypandoc<1.8.0"]
+build-backend = "poetry.core.masonry.api"
